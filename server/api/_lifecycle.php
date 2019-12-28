@@ -38,8 +38,8 @@ function get_db_link() {
   $host = $db_params['host'];
   $user = $db_params['user'];
   $pass = $db_params['pass'];
-  $database = $db_params['database'];
-  $link = mysqli_connect($host, $user, $pass, $database);
+  // $database = $db_params['database'];
+  $link = mysqli_connect($host, $user, $pass/* , $database */);
   if (!$link) {
     throw new ApiError('The API is temporarily down.', 503);
   }
