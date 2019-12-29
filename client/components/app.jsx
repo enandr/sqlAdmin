@@ -72,7 +72,7 @@ export default class App extends React.Component {
     });
     return (
       <div className="container">
-        <h5 className="red-text" onClick={this.databasesView}>Back</h5>
+        <h5 className="red-text canClick" onClick={this.databasesView}>Back</h5>
         <table className="striped highlight">
           <thead>
             <tr className="blue darken 1">

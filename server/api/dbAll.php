@@ -1,5 +1,6 @@
 <?php
 if ($request['method'] === 'GET') {
+  $badDbs = ['information_schema', 'multitable', 'mysql', 'performance_schema', 'phpmyadmin', 'profile', 'sys'];
   $link = get_db_link();
   $sql = 'SHOW DATABASES';
   $data = mysqli_query($link, $sql);
@@ -7,6 +8,9 @@ if ($request['method'] === 'GET') {
   $DbAndTables=[];
   foreach ($res as $key) {
     $db = $key['Database'];
+    if (in_array($db,$badDbs)){
+      continue;
+    }
     $newArray = [];
     $newArray['Database'] = $db;
     // $sql = "SHOW TABLES FROM $db";

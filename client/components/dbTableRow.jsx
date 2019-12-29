@@ -10,7 +10,7 @@ export default class DbTableRow extends React.Component {
 
   render() {
     return (
-      <tr onClick={() => { this.props.tablesView(this.props.dbName); }}>
+      <tr className="canClick" onClick={() => { this.props.tablesView(this.props.dbName); }}>
         <td>{this.props.dbName}</td>
         <td>{this.props.tableLength}</td>
       </tr>
