@@ -4,6 +4,8 @@ require_once '../api/_lifecycle.php';
 
 switch ($request['path']) {
   case '/api/dbAll':
+  case '/api/tables':
+  case '/api/login':
   case '/api/health-check':
     require_once "..${request['path']}.php";
   default:
