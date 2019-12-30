@@ -13,7 +13,7 @@ export default class TablesRow extends React.Component {
     return (
       <tr /* onClick={() => { this.props.tablesView(this.props.dbName); }} */>
         {/* <td>test</td> */}
-        <td>{this.props.tableName}</td>
+        <td className="canClick" onClick={() => { this.props.entries(this.props.tableName); }}>{this.props.tableName}</td>
         <td>{this.props.count}</td>
       </tr>
     );

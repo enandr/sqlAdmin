@@ -2,6 +2,8 @@ import React from 'react';
 import Login from './login';
 import DbTableRow from './dbTableRow';
 import TablesRow from './tablesRow';
+import EntryTables from './entryTables';
+import EntryRow from './entryRow';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -10,11 +12,14 @@ export default class App extends React.Component {
       databases: [null],
       view: 'login',
       dbSearch: '',
-      backView: 'databases'
+      backView: 'databases',
+      tableData: [null]
     };
     this.login = this.login.bind(this);
+    this.loginView = this.loginView.bind(this);
     this.tablesView = this.tablesView.bind(this);
     this.databasesView = this.databasesView.bind(this);
+    this.EntryTablesView = this.EntryTablesView.bind(this);
   }
 
   componentDidMount() {
@@ -28,7 +33,11 @@ export default class App extends React.Component {
     fetch('/api/dbAll')
       .then(res => res.json())
       .then(data => {
-        this.setState({ databases: data, view: 'databases' });
+        if (Array.isArray(data)) {
+          this.setState({ databases: data, view: 'databases' });
+        } else {
+          alert('Wrong username or password');
+        }
       })
       .catch(err => console.error('Fetch failed!', err));
   }
@@ -51,11 +60,70 @@ export default class App extends React.Component {
         return (
           this.renderDbTables()
         );
+      case 'entries':
+        return (
+          this.renderEntryTables()
+        );
     }
+  }
+
+  loginView() {
+    this.setState({ view: 'login', databases: ['null'], backView: 'databases' });
   }
 
   databasesView() {
     this.setState({ view: 'databases' });
+  }
+
+  EntryTablesView(tableName) {
+    this.setState({ view: 'entries', tableData: [null], dbSearch: tableName, backView: 'tables' });
+  }
+
+  renderEntryTables() {
+    if (this.state.tableData[0] === null) {
+      this.state.databases.map((value, index) => {
+        const db = value.Database;
+        value.Tables.map((value, index) => {
+          if (value.table_name === this.state.dbSearch) {
+            fetch(`/api/tables?db=${db}&table=${value.table_name}`)
+              .then(res => res.json())
+              .then(data => {
+                this.setState({ tableData: data });
+              });
+          }
+        });
+      });
+    }
+
+    if (this.state.tableData[0] === null) {
+      return (
+        <table className="responsive-table">
+          <thead>
+            <tr>
+              <th>
+                No Data Available
+              </th>
+            </tr>
+          </thead>
+        </table>
+      );
+    } else {
+      return (
+        <div className="container">
+          <h5 className="red-text canClick" onClick={this.databasesView}>Back</h5>
+          <table className="responsive-table">
+            <thead>
+              <EntryTables entries={this.state.tableData} />
+            </thead>
+            <tbody>
+              <EntryRow entries={this.state.tableData} />
+            </tbody>
+          </table>
+
+        </div>
+
+      );
+    }
   }
 
   renderDbTables() {
@@ -64,7 +132,7 @@ export default class App extends React.Component {
       if (value.Database === this.state.dbSearch) {
         const dbTables = value.Tables.map((value, index) => {
           return (
-            <TablesRow key={index} tableName={value.table_name} count={value.table_rows}/>
+            <TablesRow entries={this.EntryTablesView} key={index} tableName={value.table_name} count={value.table_rows}/>
           );
         });
         return dbTables;
@@ -73,7 +141,7 @@ export default class App extends React.Component {
     return (
       <div className="container">
         <h5 className="red-text canClick" onClick={this.databasesView}>Back</h5>
-        <table className="striped highlight">
+        <table className="striped highlight responsive-table">
           <thead>
             <tr className="blue darken 1">
               <th>
@@ -103,7 +171,8 @@ export default class App extends React.Component {
     }
     return (
       <div className="container">
-        <table className="striped highlight">
+        <h5 className="red-text canClick" onClick={this.loginView}>Logout</h5>
+        <table className="striped highlight responsive-table">
           <thead>
             <tr className="blue darken 1">
               <th>
@@ -111,6 +180,9 @@ export default class App extends React.Component {
               </th>
               <th>
                 Table Count
+              </th>
+              <th>
+                Make Table
               </th>
             </tr>
           </thead>

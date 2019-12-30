@@ -10,9 +10,10 @@ export default class DbTableRow extends React.Component {
 
   render() {
     return (
-      <tr className="canClick" onClick={() => { this.props.tablesView(this.props.dbName); }}>
-        <td>{this.props.dbName}</td>
+      <tr>
+        <td className="canClick" onClick={() => { this.props.tablesView(this.props.dbName); }}>{this.props.dbName}</td>
         <td>{this.props.tableLength}</td>
+        <td><i className="material-icons">add_circle</i></td>
       </tr>
     );
   }
