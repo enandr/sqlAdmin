@@ -13,7 +13,9 @@ export default class App extends React.Component {
       view: 'login',
       dbSearch: '',
       backView: 'databases',
-      tableData: [null]
+      tableData: [null],
+      collations: [],
+      autoCompleteValues: []
     };
     this.login = this.login.bind(this);
     this.loginView = this.loginView.bind(this);
@@ -25,8 +27,28 @@ export default class App extends React.Component {
   componentDidMount() {
     fetch('/api/health-check')
       .then(res => res.json())
-      .then(data => this.setState({ message: data.message || data.error }))
+      .then(data => () => this.setState({ message: data.message || data.error }))
       .catch(err => this.setState({ message: err.message }));
+  }
+
+  getCollations() {
+    fetch('/api/collation')
+      .then(res => res.json())
+      .then(data => {
+        data = data.map(value => {
+          return value.COLLATION_NAME;
+        });
+        this.setState({ collations: data });
+      })
+      .catch(err => this.setState({ message: err.message })/* , this.fillAutoComplete() */);
+  }
+
+  fillAutoComplete() {
+    /*     instance.updateData({
+      Apple: null,
+      Microsoft: null,
+      Google: 'https://placehold.it/250x250'
+    }); */
   }
 
   login(text) {
@@ -34,7 +56,7 @@ export default class App extends React.Component {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          this.setState({ databases: data, view: 'databases' });
+          this.setState({ databases: data, view: 'databases' }, this.getCollations());
         } else {
           alert('Wrong username or password');
         }
@@ -172,6 +194,7 @@ export default class App extends React.Component {
     return (
       <div className="container">
         <h5 className="red-text canClick" onClick={this.loginView}>Logout</h5>
+        <a className="waves-effect waves-light btn modal-trigger" href="#modal1">Add</a>
         <table className="striped highlight responsive-table">
           <thead>
             <tr className="blue darken 1">
